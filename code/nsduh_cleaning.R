@@ -260,10 +260,14 @@ names(csv_in) <- c("nsduh_12", "nsduh_14")
 
 file <- c(file, csv_in)
 
+# binding and cleaning ----------------------------------------------------
 
+rml <- bind_rows(file)
 
-
-
-
-
-
+rml <- rml %>% 
+  arrange(year, state) %>% 
+  mutate(se_12_17 = (`12_17_upper` - `12_17_lower`) / (2 * 1.96), 
+         se_18_25 = (`18_25_upper` - `18_25_lower`) / (2 * 1.96), 
+         se_26_plus = (`26_plus_upper` - `26_plus_lower`) / (2 * 1.96)) %>% 
+  select_at(vars(-contains("upper"))) %>% 
+  select_at(vars(-contains("lower")))
