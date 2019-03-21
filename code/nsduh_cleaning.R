@@ -27,18 +27,18 @@ html_read <- function(file) {
 
 clean_sep <- function(data) {
   
-  fucking_tidy <- list()
+  tidied <- list()
   
   for (i in names(data)) {
     if (str_detect(i, "interval")) {
-      fucking_tidy[[i]] <- separate(data, i, c(paste0(i, "lower"), paste0(i, "upper")), sep = "-")
+      tidied[[i]] <- separate(data, i, c(paste0(i, "lower"), paste0(i, "upper")), sep = "-")
     }
   }
   
-  if ("TRUE" %in% str_detect(names(fucking_tidy[[1]]), "prediction")) {
-      fucking_tidy[[1]] <- fucking_tidy[[1]] %>% 
-        left_join(fucking_tidy[[2]]) %>% 
-        left_join(fucking_tidy[[3]]) %>% 
+  if ("TRUE" %in% str_detect(names(tidied[[1]]), "prediction")) {
+      tidied[[1]] <- tidied[[1]] %>% 
+        left_join(tidied[[2]]) %>% 
+        left_join(tidied[[3]]) %>% 
         select(-c("x18_25_95_percent_prediction_interval",
                   "x26_95_percent_prediction_interval",
                   "x12_17_95_percent_prediction_interval")) %>% 
@@ -60,9 +60,9 @@ clean_sep <- function(data) {
                x26_estimate, everything()) %>% 
         mutate_at(c(3:11), as.numeric)
     } else {
-      fucking_tidy[[1]] <- fucking_tidy[[1]] %>% 
-        left_join(fucking_tidy[[2]]) %>% 
-        left_join(fucking_tidy[[3]]) %>% 
+      tidied[[1]] <- tidied[[1]] %>% 
+        left_join(tidied[[2]]) %>% 
+        left_join(tidied[[3]]) %>% 
         select(-c("x18_25_95_percent_confidence_interval",
                   "x26_95_percent_confidence_interval",
                   "x12_17_95_percent_confidence_interval")) %>% 
@@ -84,9 +84,9 @@ clean_sep <- function(data) {
                x26_estimate, everything()) %>% 
         mutate_at(c(3:11), as.numeric)
     }
-  colnames(fucking_tidy[[1]]) <- c_names
+  colnames(tidied[[1]]) <- c_names
   
-  return(fucking_tidy[[1]])
+  return(tidied[[1]])
 }
 
 html_files <- list.files("data/raw") %>% 
@@ -121,6 +121,8 @@ nsduh_10 <- nsduh_10 %>%
 file[["nsduh_10"]] <- nsduh_10
 
 # importing excel data ----------------------------------------------------
+
+# grouped easy excel
 
 excel_read <- function(file) {
   
@@ -162,4 +164,106 @@ excel_in <- list()
 excel_in <- excel_files$value %>% 
   map(excel_read)
 
-c(file, excel_in) %>% View()
+names(excel_in) <- c("nsduh_13", "nsduh_16", "nsduh_17")
+
+file <- c(file, excel_in) 
+
+# more involved group excel
+
+nsduh_15 <- read_excel("data/raw/nsduh_14_15.xlsx", sheet = "Table 3") %>% 
+  slice(-c(1:4)) 
+
+colnames(nsduh_15) <- nsduh_15[1, ]
+
+nsduh_15 <- nsduh_15 %>% 
+  slice(-c(1:6)) %>% 
+  filter(State != "District of Columbia") %>% 
+  select(2:17) %>% 
+  select(-c(2:4, 14:16)) %>% 
+  janitor::clean_names() %>%
+  mutate(year = as.numeric(paste0("20", 15))) %>% 
+  select(state, year, x12_17_estimate, x12_17_95_percent_ci_lower,
+         x12_17_95_percent_ci_upper, x18_25_estimate,
+         x18_25_95_percent_ci_lower, x18_25_95_percent_ci_upper,
+         x26_or_older_estimate, everything()) %>% 
+  mutate_at(c(3:11), as.numeric) %>% 
+  mutate_at(c(3:11), function(x) x * 100)
+
+colnames(nsduh_15) <- c_names
+
+file[["nsduh_15"]] <- nsduh_15
+
+# single excel sheets
+
+nsduh_11 <- read_excel("data/raw/nsduh_pm_mj_10_11.xlsx", sheet = "Table 3") %>% 
+  slice(-c(1:3)) 
+
+colnames(nsduh_11) <- nsduh_11[1, ]
+
+nsduh_11 <- nsduh_11 %>% 
+  slice(-c(1:6)) %>% 
+  filter(State != "District of Columbia") %>% 
+  select(-c(1, 3:5)) %>% 
+  janitor::clean_names() %>%
+  mutate(year = as.numeric(paste0("20", 11))) %>% 
+  select(state, year, x12_17_estimate, x12_17_95_percent_ci_lower,
+         x12_17_95_percent_ci_upper, x18_25_estimate,
+         x18_25_95_percent_ci_lower, x18_25_95_percent_ci_upper,
+         x26_or_older_estimate, everything()) %>% 
+  mutate_at(c(3:11), as.numeric) %>% 
+  mutate_at(c(3:11), function(x) x * 100)
+
+colnames(nsduh_11) <- c_names
+
+file[["nsduh_11"]] <- nsduh_11
+
+# csv files ---------------------------------------------------------------
+
+csv_read <- function(data) {
+  yr <- str_extract(data, "(?<=[1-9]_)(.*?)(?=.csv)")
+  
+  x <- read_csv(data) %>% 
+    slice(-c(1:3))
+  
+  colnames(x) <- x[1, ]
+  
+  x <- x %>% 
+    slice(-c(1:6)) %>% 
+    filter(State != "District of Columbia") %>% 
+    select(-c(1, 3:5, 15:17)) %>% 
+    janitor::clean_names() %>% 
+    mutate_at(vars(contains("x")), ~str_replace(., "%", ""), 
+              vars(contains("x")), as.numeric) %>% 
+    mutate(year = as.numeric(paste0("20", yr))) %>% 
+    select(state, year, x12_17_estimate, x12_17_95_percent_ci_lower,
+           x12_17_95_percent_ci_upper, x18_25_estimate,
+           x18_25_95_percent_ci_lower, x18_25_95_percent_ci_upper,
+           x26_or_older_estimate, everything()) %>% 
+    mutate_at(c(3:11), as.numeric)
+  
+  colnames(x) <- c_names
+  
+  return(x)
+}
+
+csvs <- list.files("data/raw") %>% 
+  as_tibble() %>% 
+  filter(str_detect(value, ".csv")) %>% 
+  mutate(value = paste0("data/raw/", value))
+
+csv_in <- list()
+
+csv_in <- csvs$value %>% 
+  map(csv_read)
+
+names(csv_in) <- c("nsduh_12", "nsduh_14")
+
+file <- c(file, csv_in)
+
+
+
+
+
+
+
+
