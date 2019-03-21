@@ -271,3 +271,5 @@ rml <- rml %>%
          se_26_plus = (`26_plus_upper` - `26_plus_lower`) / (2 * 1.96)) %>% 
   select_at(vars(-contains("upper"))) %>% 
   select_at(vars(-contains("lower")))
+
+write_csv(rml, "data/clean/rml_07_17.csv")
