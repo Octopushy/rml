@@ -4,6 +4,7 @@ library(lme4)
 library(broom)
 library(emmeans)
 library(modelr)
+library(jsonlite)
 
 # a little housekeeping ---------------------------------------------------
 
@@ -46,13 +47,6 @@ rml_map %>%
 
 rml_map %>% 
   unnest(pair) %>% 
-  group_by(age_grp) %>% 
-  dplyr::summarize(avg = mean(estimate), 
-                   lower = quantile(estimate, 0.025), 
-                   upper = quantile(estimate, 0.975))
-
-rml_map %>% 
-  unnest(pair) %>% 
   filter(age_grp == "18_25") %>% 
   ggplot(aes(x = estimate)) + 
   geom_density()
@@ -62,4 +56,25 @@ rml_map %>%
   filter(age_grp == "26_plus") %>% 
   ggplot(aes(x = estimate)) + 
   geom_density()
+
+rml_map %>% 
+  unnest(pair) %>% 
+  ggplot(aes(x = estimate)) + 
+    geom_density() + 
+    facet_grid(cols = vars(age_grp))
+
+rml_map %>% 
+  unnest(pair) %>% 
+  group_by(age_grp) %>% 
+  dplyr::summarize(avg = mean(estimate), 
+                   lower = quantile(estimate, 0.025), 
+                   upper = quantile(estimate, 0.975))
+
+# saving results ----------------------------------------------------------
+
+rml_tidy <- rml_map %>% 
+  mutate(models = map(models, tidy), 
+         emm = map(emm, tidy))
+
+write_json(rml_tidy, "data/sim_ten_k_results.json")
 

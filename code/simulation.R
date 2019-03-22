@@ -1,5 +1,6 @@
 
 library(tidyverse)
+library(jsonlite)
 
 # data import -------------------------------------------------------------
 
@@ -8,7 +9,7 @@ rml <- read_csv("data/clean/rml_07_17.csv") %>%
 
 # simulation --------------------------------------------------------------
 
-n <- 100
+n <- 10000
 x <- list()
 y <- list()
 z <- list()
@@ -72,6 +73,8 @@ for (i in 1:n) {
 simulate <- simulate %>% 
   gather(key = age_grp, value = prev, `12_17`:`26_plus`) %>% 
   nest(-sim)
+
+# write_json(simulate, "data/clean/rml_simulation.json")
 
 
 
