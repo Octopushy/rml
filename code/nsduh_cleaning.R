@@ -170,8 +170,8 @@ file <- c(file, excel_in)
 
 # more involved group excel
 
-nsduh_15 <- read_excel("data/raw/nsduh_14_15.xlsx", sheet = "Table 3") %>% 
-  slice(-c(1:4)) 
+nsduh_15 <- read_excel("data/raw/nsduh_14_15.xlsx", sheet = "Table 2") %>% 
+  slice(-c(1:3)) 
 
 colnames(nsduh_15) <- nsduh_15[1, ]
 
