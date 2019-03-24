@@ -277,7 +277,7 @@ rml <- rml %>%
          rml = ifelse(state == "Colorado" & year < 2012, "before", rml), 
          rml = ifelse(state == "Colorado" & year >= 2012, "after", rml),
          rml = ifelse(state == "Washington" & year < 2012, "before", rml), 
-         rml = ifelse(state == "Washingotn" & year >= 2012, "after", rml), 
+         rml = ifelse(state == "Washington" & year >= 2012, "after", rml), 
          rml = ifelse(state == "Alaska" & year < 2014, "before", rml), 
          rml = ifelse(state == "Alaska" & year >= 2014, "after", rml), 
          rml = ifelse(state == "Oregon" & year < 2014, "before", rml), 
