@@ -5,6 +5,8 @@ library(broom)
 library(emmeans)
 library(modelr)
 library(jsonlite)
+library(furrr)
+library(WriteXLS)
 
 # a little housekeeping ---------------------------------------------------
 
@@ -18,19 +20,35 @@ rml <- rml %>%
 
 b <- lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), data = rml)
 
+b_t_3 <- anova(b) %>% tidy()
+
+b_est <- b %>% tidy()
+
 b_emm <- emmeans(b, "rml", by = "age_grp")
 
-pairs(b_emm) %>% 
+b_pairs <- pairs(b_emm) %>% 
   tidy() %>% 
   filter(level2 == "before")
 
+base_model <- list(
+  aov = b_t_3, 
+  estimates = b_est, 
+  emm = b_emm %>% tidy(), 
+  pairs = b_pairs
+)
+
+toJSON(base_model, pretty = TRUE) %>% 
+  write_lines("data/base_model.json")
+
 # mapping over simulations ------------------------------------------------
 
+plan(multiprocess)
+
 rml_map <- simulate %>% 
-  mutate(models = map(data, ~lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), data = .)))
+  mutate(models = future_map(data, ~lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), data = .)))
 
 rml_map <- rml_map %>% 
-  mutate(emm = map(models, ~emmeans(., "rml", "age_grp")))
+  mutate(emm = map(models, ~emmeans(., "rml", "age_grp"))) 
 
 rml_map <- rml_map %>% 
   mutate(pair = map(emm, pairs), 
@@ -57,7 +75,7 @@ rml_map %>%
   ggplot(aes(x = estimate)) + 
   geom_density()
 
-rml_map %>% 
+t %>% 
   unnest(pair) %>% 
   ggplot(aes(x = estimate)) + 
     geom_density() + 
@@ -77,4 +95,6 @@ rml_tidy <- rml_map %>%
          emm = map(emm, tidy))
 
 write_json(rml_tidy, "data/sim_ten_k_results.json")
+
+saveRDS(rml_tidy, "data/sim_ten_k_results.rds")
 

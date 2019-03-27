@@ -74,7 +74,7 @@ simulate <- simulate %>%
   gather(key = age_grp, value = prev, `12_17`:`26_plus`) %>% 
   nest(-sim)
 
-# write_json(simulate, "data/clean/rml_simulation.json")
+write_json(simulate, "data/clean/rml_simulation.json")
 
 
 

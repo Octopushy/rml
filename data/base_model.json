@@ -1,0 +1,439 @@
+{
+  "aov": [
+    {
+      "term": "year",
+      "df": 10,
+      "sumsq": 1185.6686,
+      "meansq": 118.5669,
+      "statistic": 35.9564
+    },
+    {
+      "term": "age_grp",
+      "df": 2,
+      "sumsq": 58948.2036,
+      "meansq": 29474.1018,
+      "statistic": 8938.2756
+    },
+    {
+      "term": "rml",
+      "df": 2,
+      "sumsq": 215.1213,
+      "meansq": 107.5607,
+      "statistic": 32.6187
+    },
+    {
+      "term": "year:age_grp",
+      "df": 20,
+      "sumsq": 726.2101,
+      "meansq": 36.3105,
+      "statistic": 11.0115
+    },
+    {
+      "term": "age_grp:rml",
+      "df": 4,
+      "sumsq": 594.2983,
+      "meansq": 148.5746,
+      "statistic": 45.0565
+    }
+  ],
+  "estimates": [
+    {
+      "term": "(Intercept)",
+      "estimate": 9.0703,
+      "std.error": 0.9284,
+      "statistic": 9.77,
+      "group": "fixed"
+    },
+    {
+      "term": "year2008",
+      "estimate": -0.0348,
+      "std.error": 0.3632,
+      "statistic": -0.0958,
+      "group": "fixed"
+    },
+    {
+      "term": "year2009",
+      "estimate": 0.1846,
+      "std.error": 0.3632,
+      "statistic": 0.5083,
+      "group": "fixed"
+    },
+    {
+      "term": "year2010",
+      "estimate": 0.4532,
+      "std.error": 0.3632,
+      "statistic": 1.2479,
+      "group": "fixed"
+    },
+    {
+      "term": "year2011",
+      "estimate": 0.7737,
+      "std.error": 0.3632,
+      "statistic": 2.1304,
+      "group": "fixed"
+    },
+    {
+      "term": "year2012",
+      "estimate": 0.8137,
+      "std.error": 0.3636,
+      "statistic": 2.2376,
+      "group": "fixed"
+    },
+    {
+      "term": "year2013",
+      "estimate": 0.3778,
+      "std.error": 0.3636,
+      "statistic": 1.0389,
+      "group": "fixed"
+    },
+    {
+      "term": "year2014",
+      "estimate": 0.3082,
+      "std.error": 0.365,
+      "statistic": 0.8443,
+      "group": "fixed"
+    },
+    {
+      "term": "year2015",
+      "estimate": 0.3253,
+      "std.error": 0.365,
+      "statistic": 0.8912,
+      "group": "fixed"
+    },
+    {
+      "term": "year2016",
+      "estimate": -0.0266,
+      "std.error": 0.3688,
+      "statistic": -0.0722,
+      "group": "fixed"
+    },
+    {
+      "term": "year2017",
+      "estimate": -0.1838,
+      "std.error": 0.3688,
+      "statistic": -0.4984,
+      "group": "fixed"
+    },
+    {
+      "term": "age_grp18_25",
+      "estimate": 14.8938,
+      "std.error": 0.6457,
+      "statistic": 23.0666,
+      "group": "fixed"
+    },
+    {
+      "term": "age_grp26_plus",
+      "estimate": 0.0421,
+      "std.error": 0.6457,
+      "statistic": 0.0651,
+      "group": "fixed"
+    },
+    {
+      "term": "rmlbefore",
+      "estimate": -0.4626,
+      "std.error": 0.4578,
+      "statistic": -1.0104,
+      "group": "fixed"
+    },
+    {
+      "term": "rmlnever",
+      "estimate": -2.4723,
+      "std.error": 0.958,
+      "statistic": -2.5807,
+      "group": "fixed"
+    },
+    {
+      "term": "year2008:age_grp18_25",
+      "estimate": 0.0692,
+      "std.error": 0.5136,
+      "statistic": 0.1347,
+      "group": "fixed"
+    },
+    {
+      "term": "year2009:age_grp18_25",
+      "estimate": 0.558,
+      "std.error": 0.5136,
+      "statistic": 1.0864,
+      "group": "fixed"
+    },
+    {
+      "term": "year2010:age_grp18_25",
+      "estimate": 1.2078,
+      "std.error": 0.5136,
+      "statistic": 2.3516,
+      "group": "fixed"
+    },
+    {
+      "term": "year2011:age_grp18_25",
+      "estimate": 1.1404,
+      "std.error": 0.5136,
+      "statistic": 2.2203,
+      "group": "fixed"
+    },
+    {
+      "term": "year2012:age_grp18_25",
+      "estimate": 1.0472,
+      "std.error": 0.5142,
+      "statistic": 2.0364,
+      "group": "fixed"
+    },
+    {
+      "term": "year2013:age_grp18_25",
+      "estimate": 1.3443,
+      "std.error": 0.5142,
+      "statistic": 2.6143,
+      "group": "fixed"
+    },
+    {
+      "term": "year2014:age_grp18_25",
+      "estimate": 1.903,
+      "std.error": 0.5161,
+      "statistic": 3.6876,
+      "group": "fixed"
+    },
+    {
+      "term": "year2015:age_grp18_25",
+      "estimate": 2.42,
+      "std.error": 0.5161,
+      "statistic": 4.6894,
+      "group": "fixed"
+    },
+    {
+      "term": "year2016:age_grp18_25",
+      "estimate": 3.2035,
+      "std.error": 0.5211,
+      "statistic": 6.1482,
+      "group": "fixed"
+    },
+    {
+      "term": "year2017:age_grp18_25",
+      "estimate": 4.6376,
+      "std.error": 0.5211,
+      "statistic": 8.9003,
+      "group": "fixed"
+    },
+    {
+      "term": "year2008:age_grp26_plus",
+      "estimate": 0.112,
+      "std.error": 0.5136,
+      "statistic": 0.2181,
+      "group": "fixed"
+    },
+    {
+      "term": "year2009:age_grp26_plus",
+      "estimate": 0.2166,
+      "std.error": 0.5136,
+      "statistic": 0.4217,
+      "group": "fixed"
+    },
+    {
+      "term": "year2010:age_grp26_plus",
+      "estimate": 0.1686,
+      "std.error": 0.5136,
+      "statistic": 0.3283,
+      "group": "fixed"
+    },
+    {
+      "term": "year2011:age_grp26_plus",
+      "estimate": -0.0633,
+      "std.error": 0.5136,
+      "statistic": -0.1232,
+      "group": "fixed"
+    },
+    {
+      "term": "year2012:age_grp26_plus",
+      "estimate": 0.0616,
+      "std.error": 0.5142,
+      "statistic": 0.1197,
+      "group": "fixed"
+    },
+    {
+      "term": "year2013:age_grp26_plus",
+      "estimate": 0.9112,
+      "std.error": 0.5142,
+      "statistic": 1.772,
+      "group": "fixed"
+    },
+    {
+      "term": "year2014:age_grp26_plus",
+      "estimate": 1.5504,
+      "std.error": 0.5161,
+      "statistic": 3.0042,
+      "group": "fixed"
+    },
+    {
+      "term": "year2015:age_grp26_plus",
+      "estimate": 2.0232,
+      "std.error": 0.5161,
+      "statistic": 3.9205,
+      "group": "fixed"
+    },
+    {
+      "term": "year2016:age_grp26_plus",
+      "estimate": 2.6483,
+      "std.error": 0.5211,
+      "statistic": 5.0826,
+      "group": "fixed"
+    },
+    {
+      "term": "year2017:age_grp26_plus",
+      "estimate": 3.6465,
+      "std.error": 0.5211,
+      "statistic": 6.9982,
+      "group": "fixed"
+    },
+    {
+      "term": "age_grp18_25:rmlbefore",
+      "estimate": -2.1451,
+      "std.error": 0.6268,
+      "statistic": -3.4224,
+      "group": "fixed"
+    },
+    {
+      "term": "age_grp26_plus:rmlbefore",
+      "estimate": -2.1956,
+      "std.error": 0.6268,
+      "statistic": -3.5029,
+      "group": "fixed"
+    },
+    {
+      "term": "age_grp18_25:rmlnever",
+      "estimate": -5.2842,
+      "std.error": 0.5331,
+      "statistic": -9.9117,
+      "group": "fixed"
+    },
+    {
+      "term": "age_grp26_plus:rmlnever",
+      "estimate": -2.8735,
+      "std.error": 0.5331,
+      "statistic": -5.3899,
+      "group": "fixed"
+    },
+    {
+      "term": "sd_(Intercept).state",
+      "estimate": 2.2733,
+      "group": "state"
+    },
+    {
+      "term": "sd_Observation.Residual",
+      "estimate": 1.8159,
+      "group": "Residual"
+    }
+  ],
+  "emm": [
+    {
+      "rml": "after",
+      "age_grp": "12_17",
+      "estimate": 9.3422,
+      "std.error": 0.8874,
+      "df": 68.5287,
+      "conf.low": 7.5717,
+      "conf.high": 11.1128
+    },
+    {
+      "rml": "before",
+      "age_grp": "12_17",
+      "estimate": 8.8797,
+      "std.error": 0.8377,
+      "df": 54.4961,
+      "conf.low": 7.2005,
+      "conf.high": 10.5588
+    },
+    {
+      "rml": "never",
+      "age_grp": "12_17",
+      "estimate": 6.87,
+      "std.error": 0.3608,
+      "df": 51.7004,
+      "conf.low": 6.1459,
+      "conf.high": 7.5941
+    },
+    {
+      "rml": "after",
+      "age_grp": "18_25",
+      "estimate": 25.8297,
+      "std.error": 0.8874,
+      "df": 68.5287,
+      "conf.low": 24.0592,
+      "conf.high": 27.6003
+    },
+    {
+      "rml": "before",
+      "age_grp": "18_25",
+      "estimate": 23.2221,
+      "std.error": 0.8377,
+      "df": 54.4961,
+      "conf.low": 21.5429,
+      "conf.high": 24.9012
+    },
+    {
+      "rml": "never",
+      "age_grp": "18_25",
+      "estimate": 18.0733,
+      "std.error": 0.3608,
+      "df": 51.7004,
+      "conf.low": 17.3491,
+      "conf.high": 18.7974
+    },
+    {
+      "rml": "after",
+      "age_grp": "26_plus",
+      "estimate": 10.4093,
+      "std.error": 0.8874,
+      "df": 68.5287,
+      "conf.low": 8.6387,
+      "conf.high": 12.1799
+    },
+    {
+      "rml": "before",
+      "age_grp": "26_plus",
+      "estimate": 7.7511,
+      "std.error": 0.8377,
+      "df": 54.4961,
+      "conf.low": 6.072,
+      "conf.high": 9.4303
+    },
+    {
+      "rml": "never",
+      "age_grp": "26_plus",
+      "estimate": 5.0635,
+      "std.error": 0.3608,
+      "df": 51.7004,
+      "conf.low": 4.3394,
+      "conf.high": 5.7876
+    }
+  ],
+  "pairs": [
+    {
+      "level1": "after",
+      "level2": "before",
+      "age_grp": "12_17",
+      "estimate": 0.4626,
+      "std.error": 0.4578,
+      "df": 1567.4593,
+      "statistic": 1.0103,
+      "p.value": 0.5704
+    },
+    {
+      "level1": "after",
+      "level2": "before",
+      "age_grp": "18_25",
+      "estimate": 2.6077,
+      "std.error": 0.4578,
+      "df": 1567.4593,
+      "statistic": 5.6956,
+      "p.value": 4.3915e-008
+    },
+    {
+      "level1": "after",
+      "level2": "before",
+      "age_grp": "26_plus",
+      "estimate": 2.6582,
+      "std.error": 0.4578,
+      "df": 1567.4593,
+      "statistic": 5.8059,
+      "p.value": 2.3187e-008
+    }
+  ]
+}
