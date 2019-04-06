@@ -289,7 +289,7 @@ rml <- rml %>%
          rml = ifelse(state == "Maine" & year < 2016, "before", rml), 
          rml = ifelse(state == "Maine" & year >= 2016, "after", rml), 
          rml = ifelse(state == "Nevada" & year < 2016, "before", rml), 
-         rml = ifelse(state == "Nevada" & year >= 2016, "before", rml), 
+         rml = ifelse(state == "Nevada" & year >= 2016, "after", rml), 
          year = as_factor(year))
 
 write_csv(rml, "data/clean/rml_07_17.csv")

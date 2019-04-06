@@ -5,8 +5,6 @@ library(broom)
 library(emmeans)
 library(modelr)
 library(jsonlite)
-library(furrr)
-library(WriteXLS)
 
 # a little housekeeping ---------------------------------------------------
 
@@ -42,10 +40,10 @@ toJSON(base_model, pretty = TRUE) %>%
 
 # mapping over simulations ------------------------------------------------
 
-plan(multiprocess)
-
 rml_map <- simulate %>% 
-  mutate(models = future_map(data, ~lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), data = .)))
+  mutate(models = map(data, ~lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), data = .)))
+
+# need to run below down
 
 rml_map <- rml_map %>% 
   mutate(emm = map(models, ~emmeans(., "rml", "age_grp"))) 
@@ -94,7 +92,6 @@ rml_tidy <- rml_map %>%
   mutate(models = map(models, tidy), 
          emm = map(emm, tidy))
 
-write_json(rml_tidy, "data/sim_ten_k_results.json")
-
+saveRDS(rml_map, "data/sim_ten_k_map.rds")
 saveRDS(rml_tidy, "data/sim_ten_k_results.rds")
-
+write_json(rml_tidy, "data/sim_ten_k_results.json")

@@ -74,6 +74,9 @@ simulate <- simulate %>%
   gather(key = age_grp, value = prev, `12_17`:`26_plus`) %>% 
   nest(-sim)
 
+# saving simulated data
+
+saveRDS(simulate, "data/clean/rml_simulation.rds")
 write_json(simulate, "data/clean/rml_simulation.json")
 
 
