@@ -74,14 +74,51 @@ tab %>%
 # plots -------------------------------------------------------------------
 
 # ridge histogram of contrast estimates - main models
+ridge <- t %>% 
+  unnest(pair) %>% 
+  ggplot(aes(x = estimate, y = age_grp)) + 
+  geom_density_ridges(stat = "binline", bins = 40, size = 0.8, rel_min_height = 0.01) 
+
+# pulling data from basic ridge
+ingredients <- ggplot_build(ridge) %>% 
+  purrr::pluck("data", 1)
+
+#finding height values
+seg <- function(value, grp) {
+  x <- ingredients %>%
+    as_tibble() %>% 
+    filter(xmin < value & xmax > value) %>% 
+    filter(group == grp) %>% 
+    select(-x) %>% 
+    mutate(x = value) %>% 
+    unique()
+  
+  return(x)
+}
+
+lower_12 <- seg(0.152, 1)
+upper_12 <- seg(1.238, 1)
+lower_18 <- seg(1.117, 2)
+upper_18 <- seg(3.518, 2)
+lower_26 <- seg(2.048, 3)
+upper_26 <- seg(3.135, 3)
+
+density_lines <- bind_rows(lower_12, upper_12, lower_18, upper_18, lower_26, upper_26) %>% 
+  select(-fill)
+
+# plotting ridge with ci cutoffs
 t %>% 
   unnest(pair) %>% 
-  ggplot(aes(x = estimate, y = age_grp, fill = age_grp, height = ..ndensity.., alpha = 0.95)) + 
-  geom_density_ridges(stat = "binline", bins = 40, size = 0.8, rel_min_height = 0.01) + 
+  ggplot(aes(x = estimate, y = age_grp, alpha = 0.95)) + 
+  geom_density_ridges(aes(fill = age_grp, height = ..ndensity..,), alpha = .65, 
+                      stat = "binline", bins = 40, size = 0.8, rel_min_height = 0.01) + 
   geom_vline(xintercept = 0, color = "red", lty = "dashed") + 
+  geom_segment(data = density_lines, 
+               aes(x = x, y = ymin, xend = x, 
+                   yend = ymin + ndensity*scale), color = "red", size = 1) + 
   scale_y_discrete(expand = expand_scale(add = c(0.1, 1.5)), 
                    labels = c("12-17\n year-olds", "18-25\n year-olds", "26+\n year-olds")) +
-  scale_fill_manual(values = c("#B57F50", "#69A2B0", "#7A9B76")) +
+  scale_fill_manual(values = c("#B57F50", "#69A2B0", "#7A9B76")) + 
   labs(subtitle = "Figure 2. Histograms of after vs. before past-month use",
        x = "Contrast estimate", 
        caption = "Contrast estimates based on 10,000 simulated models") + 
