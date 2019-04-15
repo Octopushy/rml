@@ -119,12 +119,13 @@ t %>%
   scale_y_discrete(expand = expand_scale(add = c(0.1, 1.5)), 
                    labels = c("12-17\n year-olds", "18-25\n year-olds", "26+\n year-olds")) +
   scale_fill_manual(values = c("#B57F50", "#69A2B0", "#7A9B76")) + 
-  labs(subtitle = "Figure 2. Histograms of after vs. before past-month use",
-       x = "Contrast estimate", 
-       caption = "Contrast estimates based on 10,000 simulated models") + 
+  labs(subtitle = "Figure 2. Histograms of past-month MJ use (after vs. before)",
+       x = "Estimate of after vs. before", 
+       caption = "Contrast estimates from 10,000 simulated datasets") + 
   coord_cartesian(clip = "off") +
-  theme_ridges(font_size = 38, grid = TRUE) + theme(axis.title.y = element_blank()) +
+  theme_ridges(font_size = 38, grid = FALSE, center_axis_labels = TRUE) + 
   theme(legend.position = "none", 
+        axis.title.y = element_blank(),
         text = element_text(family = "Roboto Condensed"), 
         plot.background = element_rect(fill = NA, color = NA),  
         panel.background = element_rect(fill = NA))
@@ -169,7 +170,12 @@ pre_post <- rml %>%
          pre_post = ifelse(rml == "before", "pre", "post"), 
          arg = ifelse(pre_post == "pre", 1, -1)) %>% 
   ungroup() %>% 
-  mutate(state = fct_reorder2(state, arg, diff))
+  mutate(state = fct_reorder2(state, arg, diff), 
+         state = fct_collapse(state, 
+                              "CO & WA" = c("Colorado", "Washington"), 
+                              "AK & OR" = c("Alaska", "Oregon"), 
+                              "CA, MA, ME, & NV" = c("California", "Massachusetts", "Maine", "Nevada"))) %>% 
+  unique()
 
 # actually making pyramid plot
 pp_col <- c("#FFA300", "#0077C8")
@@ -180,19 +186,19 @@ pre_post %>%
                                                            stat = "identity") + 
   geom_bar(data = subset(pre_post, pre_post == "post"), aes(fct_reorder(state, diff), diff, fill = pre_post), 
                                                             stat = "identity") + 
-  annotate(geom = "text", label = "bold(Before ~~ RML)", x = "Washington", y = -1.8, color = "white", parse = TRUE, size = 9) + 
-  annotate(geom = "text", label = "bold(After ~~ RML)", x = "Washington", y = 1.6, color = "white", parse = TRUE, size = 9) + 
+  annotate(geom = "text", label = "bold(Before ~~ RML)", x = "CO & WA", y = -1.8, color = "white", parse = TRUE, size = 9) + 
+  annotate(geom = "text", label = "bold(After ~~ RML)", x = "CO & WA", y = 1.6, color = "white", parse = TRUE, size = 9) + 
   coord_flip() + 
   labs(subtitle = "Figure 1. Years of before and after data for RML states") + 
   theme_minimal() + 
   scale_fill_manual(values = pp_col) + 
   scale_y_continuous(labels = c("8", "4", "0", "4", "6")) + 
-  labs(y = "Years of data") + 
+  labs(y = "\nYears of data") + 
   theme(axis.title.y = element_blank(), 
         text = element_text(family = "Roboto Condensed", size = 35), 
         legend.position = "none")
 
-ggsave("results/pyramid.png", dpi = 600, width = 14, height = 9)
+ggsave("results/pyramid.png", dpi = 600, width = 14, height = 6)
 
 # t %>% 
 #   unnest(pair) %>% 

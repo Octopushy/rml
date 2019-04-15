@@ -11,7 +11,8 @@ rml <- read_csv("data/clean/rml_07_17.csv") %>%
     gather(key = age_grp, value = prev, `12_17`:`26_plus`) %>% 
     mutate(pass = ifelse(rml == "never", "no", "yes"), 
            rml = as_factor(rml), 
-           rml = fct_relevel(rml, "before", "after", "never")) 
+           rml = fct_relevel(rml, "before", "after", "never"), 
+           rml = fct_relabel(rml, Hmisc::capitalize)) 
     
 
 grid_arrange_shared_legend <- function(..., ncol = length(list(...)), 
@@ -44,49 +45,66 @@ grid_arrange_shared_legend <- function(..., ncol = length(list(...)),
     
 }
 
-rml_colors <- c("#AE2573", "#FFA300")
+rml_avg <- rml %>% 
+    group_by(year, rml, age_grp) %>% 
+    summarize(prev = mean(prev)) %>% 
+    mutate(state = "avg")
 
-no_rml <- ggplot(data = subset(rml, pass == "no" & age_grp == "12_17"), aes(x = year, y = prev)) +
-    geom_jitter(alpha = 0.3, color = "gray50") + 
+rml_colors <- c("#FFA300", "#AE2573", "gray50")
+
+no_rml <- ggplot(data = subset(rml, pass == "no" & age_grp == "12_17"), 
+                 aes(x = year, y = prev, group = state)) +
+    geom_line(aes(color = rml), alpha = 0.3) + 
+    geom_line(data = subset(rml_avg, rml == "Never" & age_grp == "12_17"), 
+              aes(x = year, y = prev), color = "black") + 
+    scale_color_manual(values = rml_colors[[3]]) + 
     scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017))
 
-no_rml_18 <- ggplot(data = subset(rml, pass == "no" & age_grp == "18_25"), aes(x = year, y = prev)) +
-    geom_jitter(alpha = 0.3, color = "gray50") + 
+no_rml_18 <- ggplot(data = subset(rml, pass == "no" & age_grp == "18_25"), aes(x = year, y = prev, group = state)) +
+    geom_line(aes(color = rml), alpha = 0.3) + 
+    geom_line(data = subset(rml_avg, rml == "Never" & age_grp == "18_25"), 
+              aes(x = year, y = prev), color = "black") + 
+    scale_color_manual(values = rml_colors[[3]]) + 
     scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017))
 
-no_rml_26 <- ggplot(data = subset(rml, pass == "no" & age_grp == "26_plus"), aes(x = year, y = prev)) +
-    geom_jitter(alpha = 0.3, color = "gray50") + 
+no_rml_26 <- ggplot(data = subset(rml, pass == "no" & age_grp == "26_plus"), aes(x = year, y = prev, group = state)) +
+    geom_line(aes(color = rml), alpha = 0.3) + 
+    geom_line(data = subset(rml_avg, rml == "Never" & age_grp == "26_plus"), 
+              aes(x = year, y = prev), color = "black") + 
+    scale_color_manual(values = rml_colors[[3]]) + 
     scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017))
 
 gg_12 <- no_rml + 
-    geom_jitter(data = subset(rml, pass == "yes" & age_grp == "12_17"), 
-                aes(x = year, y = prev, color = rml)) + 
-    scale_color_manual(values = rml_colors) + 
+    geom_line(data = subset(rml, pass == "yes" & age_grp == "12_17"), 
+                aes(x = year, y = prev, group = state, color = rml)) + 
+    scale_color_manual(values = rml_colors, breaks = c("Before", "After", "Never")) + 
     theme_minimal() + 
     labs(y = "Past-month use",  
          color = "RML status", 
          subtitle = "12-17 year-olds") + 
     theme(text = element_text(family = "Roboto Condensed", size = 33), 
           axis.title.x = element_blank(), 
-          panel.grid.major = element_blank())
+          plot.margin = unit(c(5.5, 5.5, 10, 5.5), "pt"))
 
 gg_18 <- no_rml_18 + 
-    geom_jitter(data = subset(rml, pass == "yes" & age_grp == "18_25"), 
-                aes(x = year, y = prev, color = rml)) + 
-    scale_color_manual(values = rml_colors) +
+    geom_line(data = subset(rml, pass == "yes" & age_grp == "18_25"), 
+                aes(x = year, y = prev, color = rml, group = state)) + 
+    scale_color_manual(values = rml_colors, breaks = c("Before", "After", "Never")) +
+    scale_y_continuous(breaks = c(10, 20, 30)) + 
     theme_minimal() + 
     labs(color = "RML status", 
          subtitle = "18-25 year-olds") + 
     theme(text = element_text(family = "Roboto Condensed", size = 33), 
           axis.title.x = element_blank(), 
-          axis.title.y = element_blank())
+          axis.title.y = element_blank(), 
+          plot.margin = unit(c(5.5, 5.5, 10, 5.5), "pt"))
 
 gg_26 <- no_rml_26 + 
-    geom_jitter(data = subset(rml, pass == "yes" & age_grp == "26_plus"), 
-                aes(x = year, y = prev, color = rml)) + 
-    scale_color_manual(values = rml_colors) +
+    geom_line(data = subset(rml, pass == "yes" & age_grp == "26_plus"), 
+                aes(x = year, y = prev, color = rml, group = state)) + 
+    scale_color_manual(values = rml_colors, breaks = c("Before", "After", "Never")) +
     theme_minimal() + 
-    labs(x = "Year", 
+    labs(x = "\nYear", 
          y = "Past-month use",
          color = "RML status", 
          subtitle = "26+ year-olds") + 
