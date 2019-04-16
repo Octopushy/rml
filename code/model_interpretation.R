@@ -192,6 +192,7 @@ pre_post %>%
   labs(subtitle = "Figure 1. Years of before and after data for RML states") + 
   theme_minimal() + 
   scale_fill_manual(values = pp_col) + 
+  scale_x_discrete(labels = c("CA, MA,\nME, NV\n(2016)", "AK & OR\n(2014)", "CO & WA\n(2012)")) + 
   scale_y_continuous(labels = c("8", "4", "0", "4", "6")) + 
   labs(y = "\nYears of data") + 
   theme(axis.title.y = element_blank(), 

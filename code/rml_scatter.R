@@ -56,21 +56,21 @@ no_rml <- ggplot(data = subset(rml, pass == "no" & age_grp == "12_17"),
                  aes(x = year, y = prev, group = state)) +
     geom_line(aes(color = rml), alpha = 0.3) + 
     geom_line(data = subset(rml_avg, rml == "Never" & age_grp == "12_17"), 
-              aes(x = year, y = prev), color = "black") + 
+              aes(x = year, y = prev), color = "black", size = 1.1) + 
     scale_color_manual(values = rml_colors[[3]]) + 
     scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017))
 
 no_rml_18 <- ggplot(data = subset(rml, pass == "no" & age_grp == "18_25"), aes(x = year, y = prev, group = state)) +
     geom_line(aes(color = rml), alpha = 0.3) + 
     geom_line(data = subset(rml_avg, rml == "Never" & age_grp == "18_25"), 
-              aes(x = year, y = prev), color = "black") + 
+              aes(x = year, y = prev), color = "black", size = 1.1) + 
     scale_color_manual(values = rml_colors[[3]]) + 
     scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017))
 
 no_rml_26 <- ggplot(data = subset(rml, pass == "no" & age_grp == "26_plus"), aes(x = year, y = prev, group = state)) +
     geom_line(aes(color = rml), alpha = 0.3) + 
     geom_line(data = subset(rml_avg, rml == "Never" & age_grp == "26_plus"), 
-              aes(x = year, y = prev), color = "black") + 
+              aes(x = year, y = prev), color = "black", size = 1.1) + 
     scale_color_manual(values = rml_colors[[3]]) + 
     scale_x_continuous(breaks = c(2007, 2009, 2011, 2013, 2015, 2017))
 
