@@ -5,8 +5,6 @@ library(ggridges)
 library(extrafont)
 library(knitr)
 library(kableExtra)
-library(grid)
-library(gridExtra)
 
 # t <- fromJSON("data/sim_ten_k_results.json", flatten = TRUE) %>% 
 #   as_tibble(t)
@@ -96,14 +94,17 @@ seg <- function(value, grp) {
   return(x)
 }
 
-lower_12 <- seg(0.152, 1)
-upper_12 <- seg(1.238, 1)
-lower_18 <- seg(1.117, 2)
-upper_18 <- seg(3.518, 2)
-lower_26 <- seg(2.048, 3)
-upper_26 <- seg(3.135, 3)
+seg_vals <- tribble(
+  ~value, ~grp, 
+  0.152, 1,
+  1.238, 1,
+  1.117, 2,
+  3.518, 2,
+  2.048, 3,
+  3.135, 3,
+)
 
-density_lines <- bind_rows(lower_12, upper_12, lower_18, upper_18, lower_26, upper_26) %>% 
+density_lines <- bind_rows(pmap(seg_vals, seg)) %>% 
   select(-fill)
 
 # plotting ridge with ci cutoffs
