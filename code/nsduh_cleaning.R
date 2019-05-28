@@ -10,13 +10,13 @@ c_names <- c("state", "year", "12_17", "12_17_lower", "12_17_upper", "18_25", "1
 
 # basic html files
 
-html_read <- function(file) {
+html_read <- function(file, tab_num) {
   
   yr <- str_extract(file, "(?<=[1-9]_)(.*?)(?=.html)")
   
   read_html(file) %>% 
     html_nodes(css = "table") %>% 
-    .[[3]] %>%
+    .[[tab_num]] %>%
     html_table() %>% 
     janitor::clean_names() %>% 
     slice(7:n()) %>% 
@@ -98,7 +98,7 @@ html_files <- list.files("data/raw") %>%
 file <- list()
 
 file <- html_files$value %>% 
-  map(html_read) %>% 
+  map(~html_read(.x, 3)) %>% 
   map(clean_sep)
 
 names(file) <- c("nsduh_07", "nsduh_08", "nsduh_09")
@@ -124,11 +124,11 @@ file[["nsduh_10"]] <- nsduh_10
 
 # grouped easy excel
 
-excel_read <- function(file) {
+excel_read <- function(file, sheet) {
   
   yr <- str_extract(file, "(?<=[1-9]_)(.*?)(?=.xlsx)")
   
-  x <- read_excel(file, sheet = "Table 3") %>% 
+  x <- read_excel(file, sheet = sheet) %>% 
     slice(-c(1:3)) 
   
   colnames(x) <- x[1, ]
@@ -162,7 +162,7 @@ excel_files <- list.files("data/raw") %>%
 excel_in <- list()
 
 excel_in <- excel_files$value %>% 
-  map(excel_read)
+  map((~excel_read(.x, sheet = "Table 3")))
 
 names(excel_in) <- c("nsduh_13", "nsduh_16", "nsduh_17")
 
