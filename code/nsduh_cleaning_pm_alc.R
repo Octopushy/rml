@@ -27,7 +27,7 @@ names(file) <- c("nsduh_07", "nsduh_08", "nsduh_09")
 
 nsduh_10 <- read_html("https://www.samhsa.gov/data/sites/default/files/NSDUHStateEst2009-2010/FullReport/NSDUHsaeMainReport2010.htm#tabb9") %>% 
   html_nodes(css = "table") %>% 
-  .[[24]] %>% 
+  .[[30]] %>% 
   html_table() %>% 
   janitor::clean_names() %>% 
   slice(7:n()) %>% 
@@ -44,28 +44,47 @@ file[["nsduh_10"]] <- nsduh_10
 
 # grouped easy excel
 
-excel_files <- list.files("data/raw") %>% 
-  as_tibble() %>% 
-  filter(str_detect(value, ".xlsx")) %>% 
-  mutate(value = paste0("data/raw/", value)) %>% 
-  filter(!(value %in% c("data/raw/nsduh_pm_mj_10_11.xlsx", 
-                        "data/raw/nsduh_pm_alc_10_11.xlsx",
-                        "data/raw/nsduh_14_15.xlsx")))
+# excel_files <- list.files("data/raw") %>% 
+#   as_tibble() %>% 
+#   filter(str_detect(value, ".xlsx")) %>% 
+#   mutate(value = paste0("data/raw/", value)) %>% 
+#   filter(!(value %in% c("data/raw/nsduh_pm_mj_10_11.xlsx", 
+#                         "data/raw/nsduh_pm_alc_10_11.xlsx",
+#                         "data/raw/nsduh_14_15.xlsx", 
+#                         "data/raw/nsduh_pm_tob_10_11.xlsx")))
+# 
+# excel_in <- list()
+# 
+# excel_in <- excel_files$value %>% 
+#   map(excel_read, sheet = "Table 9")
+# 
+# names(excel_in) <- c("nsduh_13", "nsduh_16", "nsduh_17")
+# 
+# file <- c(file, excel_in) 
 
-excel_in <- list()
+# 12/13 alc data
 
-excel_in <- excel_files$value %>% 
-  map(excel_read, sheet = "Table 9")
+nsduh_13 <- excel_read("data/raw/nsduh_12_13.xlsx", sheet = "Table 9")
 
-names(excel_in) <- c("nsduh_13", "nsduh_16", "nsduh_17")
-
-file <- c(file, excel_in) 
+file[["nsduh_13"]] <- nsduh_13
 
 # 14/15 alc data
 
 nsduh_15 <- excel_read("data/raw/nsduh_14_15.xlsx", sheet = "Table 6")
 
 file[["nsduh_15"]] <- nsduh_15
+
+# 15/16 alc data
+
+nsduh_16 <- excel_read("data/raw/nsduh_15_16.xlsx", sheet = "Table 12")
+
+file[["nsduh_16"]] <- nsduh_16
+
+# 16/17 alc data
+
+nsduh_17 <- excel_read("data/raw/nsduh_16_17.xlsx", sheet = "Table 13")
+
+file[["nsduh_17"]] <- nsduh_17
 
 # 10/11 alc data
 
@@ -97,7 +116,7 @@ csvs <- list.files("data/raw") %>%
   as_tibble() %>% 
   filter(str_detect(value, ".csv")) %>% 
   mutate(value = paste0("data/raw/", value)) %>% 
-  filter(!(str_detect(value, "mj")))
+  filter(!(str_detect(value, "mj") | str_detect(value, "tob")))
 
 csv_in <- list()
 
@@ -145,3 +164,4 @@ rml <- rml %>%
   )
 
 write_csv(rml, "data/clean/rml_pm_alc_07_17.csv")
+saveRDS(rml, "data/clean/rml_pm_alc_07_17.rds")

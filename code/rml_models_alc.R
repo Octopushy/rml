@@ -48,16 +48,14 @@ saveRDS(simulate, "data/clean/rml_simulation_alc.rds")
 # mapping over simulations ------------------------------------------------
 
 rml_map <- simulate %>% 
-  mutate(models = map(data, ~lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), data = .)))
+  mutate(models = map(data, ~lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), 
+                                  data = .)))
 
 rml_map <- rml_map %>% 
   mutate(emm = map(models, ~emmeans(., "rml", "age_grp"))) 
 
 rml_map <- rml_map %>% 
   mutate(pair = map(emm, pairs))
-
-# test <- test %>% 
-#   mutate(pair = map(pair, function(.data) .data[c(1, 4, 7)]))
 
 make_df <- function(sim, data, models, emm, pair, ...) {
   x <- tibble(
@@ -77,17 +75,6 @@ make_pairs <- function(.data) {
     mutate(pair = after - before)
 }
 
-# test <- slice(rml_map, 1:10)
-# 
-# test <- test %>% 
-#   mutate(pred = pmap(., make_df))
-# 
-# test <- test %>% 
-#   mutate(pred = map2(pred, models, ~add_predictions(.x, .y)))
-# 
-# test <- test %>% 
-#   mutate(pred = map(pred, make_pairs))
-
 rml_map <- rml_map %>% 
   mutate(pred = pmap(., make_df))
 
@@ -97,9 +84,6 @@ rml_map <- rml_map %>%
 rml_map <- rml_map %>% 
   mutate(pred = map(pred, make_pairs))
 
-# rml_map <- rml_map %>% 
-#   mutate(pair = map(pair, function(.data) .data[c(1, 4, 7)]))
-# 
 # rml_map_1 <- slice(rml_map, 1:2500)
 # 
 # rml_map_1 <- rml_map_1 %>% 
@@ -131,7 +115,9 @@ rml_map %>%
 rml_map %>% 
   unnest(pred) %>% 
   group_by(age_grp) %>% 
-  dplyr::summarize(avg = mean(pair), 
+  dplyr::summarize(before = mean(before),
+                   after = mean(after), 
+                   avg = mean(pair), 
                    lower = quantile(pair, 0.025), 
                    upper = quantile(pair, 0.975))
 

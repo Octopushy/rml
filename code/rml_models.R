@@ -43,8 +43,6 @@ toJSON(base_model, pretty = TRUE) %>%
 rml_map <- simulate %>% 
   mutate(models = map(data, ~lmer(prev ~ year + age_grp + rml + age_grp*year + age_grp*rml + (1 | state), data = .)))
 
-# need to run below down
-
 rml_map <- rml_map %>% 
   mutate(emm = map(models, ~emmeans(., "rml", "age_grp"))) 
 

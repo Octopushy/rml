@@ -1,4 +1,3 @@
-
 library(tidyverse)
 library(extrafont)
 library(ggrepel)
@@ -6,7 +5,7 @@ library(cowplot)
 library(gridExtra)
 library(grid)
 
-rml <- read_csv("data/clean/rml_07_17.csv") %>% 
+rml <- read_csv("data/clean/rml_pm_tob_07_17.csv") %>% 
     select(-c(se_12_17:se_26_plus)) %>% 
     gather(key = age_grp, value = prev, `12_17`:`26_plus`) %>% 
     mutate(pass = ifelse(rml == "never", "no", "yes"), 
@@ -90,7 +89,7 @@ gg_18 <- no_rml_18 +
     geom_line(data = subset(rml, pass == "yes" & age_grp == "18_25"), 
                 aes(x = year, y = prev, color = rml, group = state)) + 
     scale_color_manual(values = rml_colors, breaks = c("Before", "After", "Never")) +
-    scale_y_continuous(breaks = c(10, 20, 30)) + 
+    # scale_y_continuous(breaks = c(10, 20, 30)) + 
     theme_minimal() + 
     labs(color = "RML status", 
          subtitle = "18-25 year-olds") + 
@@ -124,7 +123,7 @@ gg_26 <- no_rml_26 +
 #     labs(x = "Past-month use, 12-17 year-olds", 
 #          y = "")
 
-ggsave("results/scatter_grid.png", 
+ggsave("results/scatter_grid_tob.png", 
        plot = grid_arrange_shared_legend(gg_12, gg_18, gg_26, ncol = 2, nrow = 2), 
        dpi = 600, width = 14, height = 11)
 

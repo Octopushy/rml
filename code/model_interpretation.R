@@ -6,6 +6,10 @@ library(extrafont)
 library(knitr)
 library(kableExtra)
 
+# different datasets use the same name to reuse functions. Make sure you a clear
+# which dataset you have loaded (mj use, alcohol use, or tobacco use) when
+# analyzing.
+
 # t <- fromJSON("data/sim_ten_k_results.json", flatten = TRUE) %>% 
 #   as_tibble(t)
 
@@ -32,13 +36,6 @@ t %>%
   .[[1]] %>% View()
 
 # tables ------------------------------------------------------------------
-
-# currently not being used for poster
-# base$aov %>% 
-#   kable() %>% 
-#   kable_styling(bootstrap_options = c("striped", "bordered"), 
-#                 full_width = FALSE) %>% 
-#   save_kable("test1.png")
 
 ci <- t %>% 
   unnest(pair) %>% 
@@ -73,8 +70,8 @@ tab %>%
 
 # ridge histogram of contrast estimates - main models
 ridge <- t %>% 
-  unnest(pair) %>% 
-  ggplot(aes(x = estimate, y = age_grp)) + 
+  unnest(pred) %>% 
+  ggplot(aes(x = pair, y = age_grp)) + 
   geom_density_ridges(stat = "binline", bins = 40, size = 0.8, rel_min_height = 0.01) 
 
 # pulling data from basic ridge
@@ -94,7 +91,8 @@ seg <- function(value, grp) {
   return(x)
 }
 
-seg_vals <- tribble(
+# for past month mj use
+seg_vals_rml <- tribble(
   ~value, ~grp, 
   0.152, 1,
   1.238, 1,
@@ -104,13 +102,42 @@ seg_vals <- tribble(
   3.135, 3,
 )
 
-density_lines <- bind_rows(pmap(seg_vals, seg)) %>% 
+get_quantile <- function(quantile, grp) {
+  t %>% 
+  unnest(pred) %>% 
+  filter(age_grp == grp) %>% 
+  summarise(value = quantile(.$pair, quantile))
+}
+
+# get_quantile(0.025, "12_17")
+
+quants <- tribble(
+  ~quantile, ~grp, 
+  0.025, "12_17", 
+  0.975, "12_17", 
+  0.025, "18_25", 
+  0.975, "18_25", 
+  0.025, "26_plus", 
+  0.975, "26_plus"
+)
+
+vals_alc <- pmap_df(quants, get_quantile)
+vals_tob <- pmap_df(quants, get_quantile)
+
+grp <- tibble(
+  grp = c(1, 1, 2, 2, 3, 3)
+)
+
+seg_vals_alc <- bind_cols(vals_alc, grp)
+seg_vals_tob <- bind_cols(vals_tob, grp)
+
+density_lines <- bind_rows(pmap(seg_vals_alc, seg)) %>% 
   select(-fill)
 
 # plotting ridge with ci cutoffs
 t %>% 
-  unnest(pair) %>% 
-  ggplot(aes(x = estimate, y = age_grp, alpha = 0.95)) + 
+  unnest(pred) %>% 
+  ggplot(aes(x = pair, y = age_grp, alpha = 0.95)) + 
   geom_density_ridges(aes(fill = age_grp, height = ..ndensity..,), alpha = .65, 
                       stat = "binline", bins = 40, size = 0.8, rel_min_height = 0.01) + 
   geom_vline(xintercept = 0, color = "red", lty = "dashed") + 
@@ -120,18 +147,18 @@ t %>%
   scale_y_discrete(expand = expand_scale(add = c(0.1, 1.5)), 
                    labels = c("12-17\n year-olds", "18-25\n year-olds", "26+\n year-olds")) +
   scale_fill_manual(values = c("#B57F50", "#69A2B0", "#7A9B76")) + 
-  labs(subtitle = "Figure 2. Histograms of past-month MJ use (after vs. before)",
+  labs(subtitle = "Histograms of past-month alcohol use (after vs. before)",
        x = "Estimate of after vs. before", 
        caption = "Contrast estimates from 10,000 simulated datasets") + 
   coord_cartesian(clip = "off") +
-  theme_ridges(font_size = 38, grid = FALSE, center_axis_labels = TRUE) + 
+  theme_ridges(font_size = 38, grid = TRUE, center_axis_labels = TRUE) + 
   theme(legend.position = "none", 
         axis.title.y = element_blank(),
         text = element_text(family = "Roboto Condensed"), 
         plot.background = element_rect(fill = NA, color = NA),  
         panel.background = element_rect(fill = NA))
 
-ggsave("results/ridge_histogram.png", dpi = 600, width = 14, height = 7)
+ggsave("results/ridge_histogram_alc.png", dpi = 600, width = 14, height = 7)
 
 # ridge histogram - sensitivity models
 s %>% 

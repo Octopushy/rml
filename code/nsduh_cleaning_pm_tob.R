@@ -94,6 +94,110 @@ nsduh_17 <- excel_read("data/raw/nsduh_16_17.xlsx", sheet = "Table 17", 4)
 
 file[["nsduh_17"]] <- nsduh_17
 
+# 10/11 tob data
 
+nsduh_11 <- read_excel("data/raw/nsduh_pm_tob_10_11.xlsx", sheet = "Table 13") %>% 
+  slice(-c(1:4)) 
 
+colnames(nsduh_11) <- nsduh_11[1, ]
+
+nsduh_11 <- nsduh_11 %>% 
+  slice(-c(1:6)) %>% 
+  filter(State != "District of Columbia") %>% 
+  select(-c(1, 3:5)) %>% 
+  janitor::clean_names() %>%
+  mutate(year = as.numeric(paste0("20", 11))) %>% 
+  select(state, year, x12_17_estimate, x12_17_95_percent_ci_lower,
+         x12_17_95_percent_ci_upper, x18_25_estimate,
+         x18_25_95_percent_ci_lower, x18_25_95_percent_ci_upper,
+         x26_or_older_estimate, everything()) %>% 
+  mutate_at(c(3:11), as.numeric) %>% 
+  mutate_at(c(3:11), function(x) x * 100)
+
+colnames(nsduh_11) <- c_names
+
+file[["nsduh_11"]] <- nsduh_11
+
+# csv files ---------------------------------------------------------------
+
+csvs <- list.files("data/raw") %>% 
+  as_tibble() %>% 
+  filter(str_detect(value, ".csv")) %>% 
+  mutate(value = paste0("data/raw/", value)) %>% 
+  filter(!(str_detect(value, "mj") | str_detect(value, "alc")))
+
+csv_read <- function(data) {
+  yr <- str_extract(data, "(?<=[1-9]_)(.*?)(?=.csv)")
+  
+  x <- read_csv(data) %>% 
+    slice(-c(1:4))
+  
+  colnames(x) <- x[1, ]
+  
+  x <- x %>% 
+    slice(-c(1:6)) %>% 
+    filter(State != "District of Columbia") %>% 
+    select(-c(1, 3:5, 15:17)) %>% 
+    janitor::clean_names() %>% 
+    mutate_at(vars(contains("x")), ~str_replace(., "%", ""), 
+              vars(contains("x")), as.numeric) %>% 
+    mutate(year = as.numeric(paste0("20", yr))) %>% 
+    select(state, year, x12_17_estimate, x12_17_95_percent_ci_lower,
+           x12_17_95_percent_ci_upper, x18_25_estimate,
+           x18_25_95_percent_ci_lower, x18_25_95_percent_ci_upper,
+           x26_or_older_estimate, everything()) %>% 
+    mutate_at(c(3:11), as.numeric)
+  
+  colnames(x) <- c_names
+  
+  return(x)
+}
+
+csv_in <- list()
+
+csv_in <- csvs$value %>% 
+  map(csv_read)
+
+names(csv_in) <- c("nsduh_12", "nsduh_14")
+
+file <- c(file, csv_in)
+
+# binding and cleaning ----------------------------------------------------
+
+rml <- bind_rows(file)
+
+legal <- c("Colorado", "Washington", "Alaska", "Oregon", "California", "Maine", "Massachusetts", "Nevada")
+
+rml <- rml %>% 
+  arrange(year, state) %>% 
+  mutate(se_12_17 = (`12_17_upper` - `12_17_lower`) / (2 * 1.96), 
+         se_18_25 = (`18_25_upper` - `18_25_lower`) / (2 * 1.96), 
+         se_26_plus = (`26_plus_upper` - `26_plus_lower`) / (2 * 1.96)) %>% 
+  select_at(vars(-contains("upper"))) %>% 
+  select_at(vars(-contains("lower"))) %>% 
+  mutate(
+    rml = case_when(
+      !(state %in% legal) ~ "never", 
+      state == "Colorado" & year < 2012 ~ "before", 
+      state == "Colorado" & year >= 2012 ~ "after",
+      state == "Washington" & year < 2012 ~ "before", 
+      state == "Washington" & year >= 2012 ~ "after", 
+      state == "Alaska" & year < 2014 ~ "before", 
+      state == "Alaska" & year >= 2014 ~ "after", 
+      state == "Oregon" & year < 2014 ~ "before", 
+      state == "Oregon" & year >= 2014 ~ "after", 
+      state == "California" & year < 2016 ~ "before", 
+      state == "California" & year >= 2016 ~ "after", 
+      state == "Massachusetts" & year < 2016 ~ "before",  
+      state == "Massachusetts" & year >= 2016 ~ "after",  
+      state == "Maine" & year < 2016 ~ "before", 
+      state == "Maine" & year >= 2016 ~ "after", 
+      state == "Nevada" & year < 2016 ~ "before", 
+      state == "Nevada" & year >= 2016 ~ "after"
+    ), 
+    year = as_factor(year)
+  )
+
+write_csv(rml, "data/clean/rml_pm_tob_07_17.csv")
+saveRDS(rml, "data/clean/rml_pm_tob_07_17.rds")
 

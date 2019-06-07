@@ -273,23 +273,28 @@ rml <- rml %>%
          se_26_plus = (`26_plus_upper` - `26_plus_lower`) / (2 * 1.96)) %>% 
   select_at(vars(-contains("upper"))) %>% 
   select_at(vars(-contains("lower"))) %>% 
-  mutate(rml = ifelse(!(state %in% legal), "never", ""), 
-         rml = ifelse(state == "Colorado" & year < 2012, "before", rml), 
-         rml = ifelse(state == "Colorado" & year >= 2012, "after", rml),
-         rml = ifelse(state == "Washington" & year < 2012, "before", rml), 
-         rml = ifelse(state == "Washington" & year >= 2012, "after", rml), 
-         rml = ifelse(state == "Alaska" & year < 2014, "before", rml), 
-         rml = ifelse(state == "Alaska" & year >= 2014, "after", rml), 
-         rml = ifelse(state == "Oregon" & year < 2014, "before", rml), 
-         rml = ifelse(state == "Oregon" & year >= 2014, "after", rml), 
-         rml = ifelse(state == "California" & year < 2016, "before", rml),
-         rml = ifelse(state == "California" & year >= 2016, "after", rml), 
-         rml = ifelse(state == "Massachusetts" & year < 2016, "before", rml), 
-         rml = ifelse(state == "Massachusetts" & year >= 2016, "after", rml), 
-         rml = ifelse(state == "Maine" & year < 2016, "before", rml), 
-         rml = ifelse(state == "Maine" & year >= 2016, "after", rml), 
-         rml = ifelse(state == "Nevada" & year < 2016, "before", rml), 
-         rml = ifelse(state == "Nevada" & year >= 2016, "after", rml), 
-         year = as_factor(year))
+  mutate(
+    rml = case_when(
+      !(state %in% legal) ~ "never", 
+      state == "Colorado" & year < 2012 ~ "before", 
+      state == "Colorado" & year >= 2012 ~ "after",
+      state == "Washington" & year < 2012 ~ "before", 
+      state == "Washington" & year >= 2012 ~ "after", 
+      state == "Alaska" & year < 2014 ~ "before", 
+      state == "Alaska" & year >= 2014 ~ "after", 
+      state == "Oregon" & year < 2014 ~ "before", 
+      state == "Oregon" & year >= 2014 ~ "after", 
+      state == "California" & year < 2016 ~ "before", 
+      state == "California" & year >= 2016 ~ "after", 
+      state == "Massachusetts" & year < 2016 ~ "before",  
+      state == "Massachusetts" & year >= 2016 ~ "after",  
+      state == "Maine" & year < 2016 ~ "before", 
+      state == "Maine" & year >= 2016 ~ "after", 
+      state == "Nevada" & year < 2016 ~ "before", 
+      state == "Nevada" & year >= 2016 ~ "after"
+    ), 
+    year = as_factor(year)
+  )
 
 write_csv(rml, "data/clean/rml_07_17.csv")
+saveRDS(rml, "data/clean/rml_07_17.rds")
